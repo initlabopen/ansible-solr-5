@@ -1,0 +1,12 @@
+---
+# defaults file for solr
+solr_instance_name: solr
+solr_home_parent: /opt
+solr_extracted: "{{ solr_home_parent }}/solr-{{ solr_version }}"
+solr_home: "{{ solr_home_parent }}/solr"
+solr_version: 5.2.0
+solr_dl_url: https://www.us.apache.org/dist/lucene/solr/{{ solr_version }}/solr-{{ solr_version }}.tgz
+solr_archive: /root/solr.tgz
+solr_user: "{{ solr_instance_name }}"
+solr_port: 8983
+solr_install_service_script: install_solr_service.sh

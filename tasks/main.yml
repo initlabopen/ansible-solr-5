@@ -1,0 +1,34 @@
+---
+# tasks file for solr
+- name: Install some prerequisites
+  apt: name={{ item }} state=installed
+  with_items:
+    - rsync
+    - unzip
+
+- name: Install OpenJDK headless package
+  apt: name=openjdk-7-jre-headless state=installed
+
+- name: Download Solr version solr_version
+  get_url: url={{ solr_dl_url }} dest={{ solr_archive }}
+
+- name: Create solr user
+  user: name={{ solr_user }} state=present
+
+- name: Extract solr files
+  unarchive: src={{ solr_archive }} dest={{ solr_home_parent }} copy=no
+
+- name: Rename solr home
+  command: mv {{ solr_extracted }} {{ solr_home }} creates={{ solr_home }}
+
+- name: Modify ownership of solr home
+  file: name={{ solr_home }} state=directory owner={{ solr_user }} group={{ solr_user }} recurse=yes
+
+- name: Create /var/solr
+  file: name=/var/{{ solr_instance_name }} state=directory owner={{ solr_user }} group={{ solr_user }}
+
+- name: Install the Solr instance
+  command: creates=/etc/init.d/{{ solr_instance_name }} {{ solr_home }}/bin/{{ solr_install_service_script }} {{ solr_archive }} -d /var/{{ solr_instance_name }} -p {{ solr_port }} -s {{ solr_instance_name }} -u {{ solr_user }}
+
+- name: Start the Solr service
+  service: name={{ solr_instance_name }} state=restarted
